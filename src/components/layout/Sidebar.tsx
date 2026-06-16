@@ -1,11 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useSidebar } from "@/context/SidebarContext";
 import type { UserRole } from "@/types";
 import {
   LayoutDashboard, Sparkles, BookOpen, ClipboardCheck, GraduationCap,
   Users, Settings, AlertTriangle, LogOut, School, FileText,
-  Calendar, Clock, Target, Star, QrCode, Users2, Pencil,
+  Calendar, Clock, Target, Star, QrCode, Users2,
   BookMarked, BarChart3, ScrollText, ClipboardList, FileSpreadsheet,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -53,6 +55,7 @@ const systemNav: NavItem[] = [
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const { collapsed, toggle } = useSidebar();
   const navigate = useNavigate();
   const role = user?.role || "guru";
 
@@ -70,17 +73,23 @@ export default function Sidebar() {
     if (items.length === 0) return null;
     return (
       <>
-        <div className="pt-4 pb-1 px-3">
-          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">{title}</p>
-        </div>
+        {!collapsed && (
+          <div className="pt-4 pb-1 px-3">
+            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest whitespace-nowrap overflow-hidden">
+              {title}
+            </p>
+          </div>
+        )}
         {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             end={item.path === "/dashboard"}
+            title={collapsed ? item.label : undefined}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                "flex items-center gap-3 rounded-lg text-sm transition-colors whitespace-nowrap overflow-hidden",
+                collapsed ? "px-2 py-2.5 justify-center" : "px-3 py-2.5",
                 isActive
                   ? "bg-primary/20 text-white font-medium"
                   : "text-gray-400 hover:bg-gray-800 hover:text-gray-100"
@@ -88,7 +97,7 @@ export default function Sidebar() {
             }
           >
             <item.icon className="w-4 h-4 shrink-0" />
-            {item.label}
+            {!collapsed && <span>{item.label}</span>}
           </NavLink>
         ))}
       </>
@@ -96,37 +105,60 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-gray-950 text-gray-200 flex flex-col z-40">
-      <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-800">
+    <aside
+      className={cn(
+        "fixed left-0 top-0 bottom-0 bg-gray-950 text-gray-200 flex flex-col z-40 transition-all duration-200",
+        collapsed ? "w-14" : "w-60"
+      )}
+    >
+      {/* Logo */}
+      <div className={cn("h-16 flex items-center border-b border-gray-800", collapsed ? "px-3 justify-center" : "px-5 gap-3")}>
         <School className="w-6 h-6 text-primary shrink-0" />
-        <span className="font-bold text-white text-lg">SekolahKu</span>
+        {!collapsed && <span className="font-bold text-white text-lg">SekolahKu</span>}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
         {renderSection("Utama", filteredNav)}
         {renderSection("Administrasi", filteredAdmin)}
         {renderSection("Tools", filteredTools)}
         {renderSection("Sistem", filteredSystem)}
       </nav>
 
-      <div className="border-t border-gray-800 p-3">
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
-            {user?.name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "U"}
+      {/* User & Logout */}
+      <div className="border-t border-gray-800 p-2">
+        {!collapsed && (
+          <div className="flex items-center gap-3 px-2 py-2 mb-1">
+            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
+              {user?.name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "U"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-200 truncate">{user?.name}</p>
+              <p className="text-xs text-gray-500 capitalize truncate">{role}</p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-gray-200 truncate">{user?.name}</p>
-            <p className="text-xs text-gray-500 capitalize truncate">{role}</p>
-          </div>
-        </div>
+        )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-800 hover:text-red-400 transition-colors"
+          className={cn(
+            "flex items-center gap-2 rounded-lg text-sm text-gray-500 hover:bg-gray-800 hover:text-red-400 transition-colors w-full",
+            collapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
+          )}
+          title="Keluar"
         >
-          <LogOut className="w-4 h-4" />
-          Keluar
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && "Keluar"}
         </button>
       </div>
+
+      {/* Toggle Button */}
+      <button
+        onClick={toggle}
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-gray-700 border border-gray-600 text-gray-400 hover:text-white hover:bg-gray-600 flex items-center justify-center transition-colors"
+        title={collapsed ? "Buka sidebar" : "Tutup sidebar"}
+      >
+        {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+      </button>
     </aside>
   );
 }
