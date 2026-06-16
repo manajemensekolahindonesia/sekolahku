@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import PublicLayout from "@/components/layout/PublicLayout";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import LandingPage from "@/pages/landing/LandingPage";
@@ -39,6 +39,101 @@ import ChangelogPage from "@/pages/dashboard/changelog/Changelog";
 import UsersPage from "@/pages/dashboard/admin/UsersPage";
 import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
 import MaintenancePage from "@/pages/dashboard/admin/MaintenancePage";
+import Chatbot from "@/pages/dashboard/chatbot/Chatbot";
+import QuickProfile from "@/components/QuickProfile";
+import { X, Sparkles, LogIn, Crown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+function ModalOverlays() {
+  const { showLoginModal, showPremiumModal, showWelcome, setShowLoginModal, setShowPremiumModal, setShowWelcome, isAuthenticated } = useAuth();
+
+  return (
+    <>
+      {/* Welcome Popup */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button onClick={() => setShowWelcome(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Selamat Datang di SekolahKu!</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Platform manajemen sekolah dengan AI. Buat modul ajar, soal, absensi, dan lainnya dalam hitungan detik.
+              </p>
+              <div className="grid grid-cols-3 gap-2 mb-6 text-xs">
+                {["Modul Ajar AI", "Buat Soal", "Absensi Cepat", "KKTP & Rubrik", "Kalender", "Worksheet"].map((f) => (
+                  <div key={f} className="bg-gray-50 rounded-lg p-2 text-gray-600 font-medium">{f}</div>
+                ))}
+              </div>
+              {!isAuthenticated && (
+                <Button onClick={() => { setShowWelcome(false); window.location.href = "/login"; }} className="w-full">
+                  Mulai Sekarang
+                </Button>
+              )}
+              <Button variant="ghost" onClick={() => { setShowWelcome(false); try { localStorage.setItem("welcome_seen", "true"); } catch {} }} className="w-full mt-2">
+                Lanjutkan
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium Lock Modal */}
+      {showPremiumModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button onClick={() => setShowPremiumModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4">
+                <Crown className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Token Harian Habis</h2>
+              <p className="text-sm text-gray-500 mb-4">
+                Anda telah menggunakan 2 token gratis hari ini. Upgrade ke paket Premium untuk akses tanpa batas.
+              </p>
+              <div className="bg-amber-50 rounded-lg p-3 mb-4 text-sm text-amber-800">
+                <strong>Premium</strong> — Rp 99.000/bulan<br />
+                Akses AI tanpa batas + semua fitur
+              </div>
+              <Button onClick={() => setShowPremiumModal(false)} variant="outline" className="w-full">
+                Nanti Saja
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Required Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button onClick={() => setShowLoginModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
+                <LogIn className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Login Diperlukan</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Silakan login terlebih dahulu untuk menggunakan fitur AI.
+              </p>
+              <Button onClick={() => { setShowLoginModal(false); window.location.href = "/login"; }} className="w-full">
+                Login Sekarang
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function App() {
   return (
@@ -92,6 +187,8 @@ export default function App() {
             <Route path="admin/maintenance" element={<MaintenancePage />} />
           </Route>
         </Routes>
+        <ModalOverlays />
+        <Chatbot isOpen={false} onClose={() => {}} />
       </BrowserRouter>
     </AuthProvider>
   );

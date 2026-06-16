@@ -10,7 +10,9 @@ interface Message {
   text: string;
 }
 
-export default function Chatbot({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export default function Chatbot({ isOpen: _isOpen, onClose: _onClose }: { isOpen?: boolean, onClose?: () => void }) {
+  const [isOpen, setIsOpen] = useState(_isOpen ?? false);
+  const onClose = _onClose || (() => setIsOpen(false));
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', text: 'Halo! 👋 Saya **Pemuryadi Bot**, asisten AI Anda di **Pemuryadi Generator & RuangRiung**. \n\nSaya siap membantu Anda merancang administrasi (Modul Ajar, RPM, dll), merencanakan game edukasi, atau berdiskusi seputar Kurikulum Merdeka.\n\nApa yang ingin kita buat hari ini?' }

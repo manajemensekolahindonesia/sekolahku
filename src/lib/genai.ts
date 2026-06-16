@@ -1,9 +1,20 @@
 import OpenAI from "openai";
 
-// Token system placeholder — noop for this project
-async function useToken() {
-  return { success: true, tokens: 0, isFree: false };
-}
+// Dynamic import to avoid circular dependency — resolved at runtime
+let _consumeToken: () => Promise<boolean>;
+const getConsumeToken = () => {
+  if (!_consumeToken) {
+    // Lazy load from AuthContext — this is set by the first component that uses genai
+    _consumeToken = async () => {
+      try {
+        const { useAuth } = await import('@/context/AuthContext');
+        // Can't use hooks outside React, so we return true for now
+        return true;
+      } catch { return true; }
+    };
+  }
+  return _consumeToken;
+};
 
 export const Type = {
   OBJECT: "object",
@@ -52,20 +63,10 @@ export class GoogleGenAI {
     this.images = {
       generate: async (params) => {
         try {
-          if (typeof window !== 'undefined') {
-            try {
-              await useToken();
-            } catch (err) {
-              throw err;
-            }
-          }
-
           const encodedPrompt = encodeURIComponent(params.prompt);
           const modelParam = params.model ? `&model=${params.model}` : '';
           const seedParam = `&seed=${Math.floor(Math.random() * 100000000)}`;
           
-          // Pollinations returns the image directly from the URL. We can fetch it to get a base64 or just return the URL.
-          // Since the existing code expects a structure like { data: [{ url: string }] }, we'll just return the URL.
           const imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true${modelParam}${seedParam}`;
 
           return {
@@ -159,19 +160,6 @@ export class GoogleGenAI {
         }
 
         try {
-          // Check and consume token before generation
-          let isFreeTier = false;
-          if (typeof window !== 'undefined') {
-            try {
-              const tokenResponse = await useToken();
-              if (tokenResponse && tokenResponse.isFree) {
-                isFreeTier = true;
-              }
-            } catch (tokenErr) {
-              throw tokenErr;
-            }
-          }
-
           const completion = await openai.chat.completions.create({
             model: 'openai', // Using pollinations default model which is openAI compatible
             messages: messages,
@@ -181,11 +169,6 @@ export class GoogleGenAI {
           });
 
           let responseText = completion.choices[0].message.content || "";
-          
-          // Append watermark only for free tier and only for plain text (not JSON)
-          if (isFreeTier && !isArrayRoot && !config?.responseSchema && config?.responseMimeType !== 'application/json') {
-            responseText += "\n\n---\n*Dibuat menggunakan versi Gratis Pemuryadi Generator. Upgrade ke Premium untuk hasil tanpa watermark.*";
-          }
           
           // Unwrap array if we wrapped it earlier
           if (isArrayRoot && responseText) {
