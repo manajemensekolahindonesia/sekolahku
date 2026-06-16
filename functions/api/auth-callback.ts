@@ -69,9 +69,11 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
         .bind(existing.id).first<Record<string, unknown>>() as Record<string, unknown>;
     } else {
       const id = crypto.randomUUID();
+      const role = profile.email === (env.OWNER_EMAIL || "") ? "owner" : "guru";
+      const plan = role === "owner" ? "plan_sekolah" : "plan_free";
       await env.DB.prepare(
-        "INSERT INTO users (id, email, name, role, google_id, avatar_url, subscription_id) VALUES (?, ?, ?, 'guru', ?, ?, 'plan_free')"
-      ).bind(id, profile.email, profile.name, profile.sub, profile.picture).run();
+        "INSERT INTO users (id, email, name, role, google_id, avatar_url, subscription_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      ).bind(id, profile.email, profile.name, role, profile.sub, profile.picture, plan).run();
 
       user = await env.DB.prepare("SELECT * FROM users WHERE id = ?")
         .bind(id).first<Record<string, unknown>>() as Record<string, unknown>;

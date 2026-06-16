@@ -24,6 +24,7 @@ type Bindings = {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   ALLOWED_ORIGIN: string;
+  OWNER_EMAIL: string;
 };
 
 function formatUser(row: Record<string, unknown>) {

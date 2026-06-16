@@ -12,7 +12,13 @@ database_id = "ac27bd38-081b-4eed-8a24-7ac22e120f0e"
 GOOGLE_CLIENT_ID = "601722467761-8l1fsbl0e1cskq4r9rgv1rab5qa39s6e.apps.googleusercontent.com"
 ALLOWED_ORIGIN = "http://localhost:5173"
 
+[env.production]
+d1_databases = [
+  { binding = "DB", database_name = "sekolahku-db", database_id = "ac27bd38-081b-4eed-8a24-7ac22e120f0e" }
+]
+
 [env.production.vars]
+GOOGLE_CLIENT_ID = "601722467761-8l1fsbl0e1cskq4r9rgv1rab5qa39s6e.apps.googleusercontent.com"
 ALLOWED_ORIGIN = "https://sekolahku-2ab.pages.dev"
 
 # ============================================

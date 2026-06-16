@@ -249,8 +249,8 @@ export default function LandingPage() {
             <span>SekolahKu &copy; {new Date().getFullYear()}</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</a>
-            <a href="#" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</a>
+            <Link to="/privacy" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
+            <Link to="/terms" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
             <a href="#" className="hover:text-gray-600 transition-colors">Bantuan</a>
           </div>
         </div>

@@ -79,7 +79,7 @@ const roleLabels: Record<string, string> = {
 
 export function DevLoginButton() {
   const { login } = useAuth();
-  const isDev = import.meta.env.VITE_DEV_MODE === "true" || import.meta.env.DEV;
+  const isDev = import.meta.env.DEV;
 
   const handleLogin = (user: User) => {
     login(user);

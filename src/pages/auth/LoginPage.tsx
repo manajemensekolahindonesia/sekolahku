@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex">
+    <div className="min-h-screen pt-16 flex">
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-blue-800 items-center justify-center p-12">
         <div className="max-w-md text-white">

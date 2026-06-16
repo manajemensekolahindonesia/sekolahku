@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Info } from "lucide-react";
 
 export function GoogleLoginButton() {
   const [error, setError] = useState("");
+  const isDev = import.meta.env.DEV;
 
   const handleLogin = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -39,6 +40,13 @@ export function GoogleLoginButton() {
         </svg>
         Masuk dengan Google
       </button>
+
+      {isDev && (
+        <div className="mt-2 flex items-start gap-2 p-2 rounded-lg bg-blue-50 border border-blue-100 text-xs text-blue-700">
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+          <p>Login Google butuh backend Functions (<code className="bg-blue-100 px-1 rounded">npx wrangler pages dev</code>). Untuk lokal, gunakan <strong>Dev Mode Login</strong> di bawah.</p>
+        </div>
+      )}
 
       {error && (
         <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">

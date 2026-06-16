@@ -3,6 +3,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import PublicLayout from "@/components/layout/PublicLayout";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import LandingPage from "@/pages/landing/LandingPage";
+import PrivacyPage from "@/pages/landing/PrivacyPage";
+import TermsPage from "@/pages/landing/TermsPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import AuthCallbackPage from "@/pages/auth/AuthCallbackPage";
 import DashboardHome from "@/pages/dashboard/DashboardHome";
@@ -23,6 +25,8 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
           </Route>
 
           {/* Auth Callback (no layout) */}
