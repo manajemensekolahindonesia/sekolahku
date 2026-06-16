@@ -118,7 +118,13 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1
+        [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-transparent
+        [&::-webkit-scrollbar-thumb]:bg-gray-700
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        hover:[&::-webkit-scrollbar-thumb]:bg-gray-600
+        scrollbar-gutter-stable">
         {renderSection("Utama", filteredNav)}
         {renderSection("Administrasi", filteredAdmin)}
         {renderSection("Tools", filteredTools)}
