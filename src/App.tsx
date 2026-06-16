@@ -27,6 +27,15 @@ import MengajarHarian from "@/pages/dashboard/mengajar-harian/MengajarHarian";
 import ProgramTahunan from "@/pages/dashboard/program/ProgramTahunan";
 import ProgramSemester from "@/pages/dashboard/program/ProgramSemester";
 import Supervisi from "@/pages/dashboard/supervisi/Supervisi";
+import ModulP5 from "@/pages/dashboard/modul-p5/ModulP5";
+import ModulKokurikuler from "@/pages/dashboard/modul-kokurikuler/ModulKokurikuler";
+import DeepLearningPlan from "@/pages/dashboard/deep-learning/DeepLearningPlan";
+import SNP from "@/pages/dashboard/snp/SNP";
+import EvaluasiMutu from "@/pages/dashboard/evaluasi-mutu/EvaluasiMutu";
+import StrategicAdvisor from "@/pages/dashboard/strategic-advisor/StrategicAdvisor";
+import Reports from "@/pages/dashboard/reports/Reports";
+import InvoiceGenerator from "@/pages/dashboard/invoice/InvoiceGenerator";
+import ChangelogPage from "@/pages/dashboard/changelog/Changelog";
 import UsersPage from "@/pages/dashboard/admin/UsersPage";
 import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
 import MaintenancePage from "@/pages/dashboard/admin/MaintenancePage";
@@ -44,36 +53,40 @@ export default function App() {
             <Route path="/terms" element={<TermsPage />} />
           </Route>
 
-          {/* Auth Callback (no layout) */}
+          {/* Auth Callback */}
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-          {/* Dashboard Routes (Protected) */}
+          {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />
-            {/* Core */}
             <Route path="perangkat-ajar" element={<PerangkatAjarPage />} />
             <Route path="modul-ajar" element={<ModuleGenerator />} />
+            <Route path="buat-soal" element={<BuatSoal />} />
             <Route path="jurnal" element={<JurnalPage />} />
+            <Route path="jurnal-harian" element={<DailyJournal />} />
             <Route path="absensi" element={<AbsensiPage />} />
             <Route path="penilaian" element={<PenilaianPage />} />
-            {/* Generators */}
-            <Route path="buat-soal" element={<BuatSoal />} />
             <Route path="kktp" element={<KKTP />} />
             <Route path="rubrik" element={<RubrikPenilaian />} />
             <Route path="worksheet" element={<WorksheetGenerator />} />
-            {/* Administration */}
             <Route path="kalender" element={<KalenderPendidikan />} />
             <Route path="analisis-hari-efektif" element={<AnalisisHariEfektif />} />
             <Route path="program-tahunan" element={<ProgramTahunan />} />
             <Route path="program-semester" element={<ProgramSemester />} />
             <Route path="mengajar-harian" element={<MengajarHarian />} />
-            <Route path="jurnal-harian" element={<DailyJournal />} />
             <Route path="supervisi" element={<Supervisi />} />
             <Route path="laporan-kegiatan" element={<LaporanKegiatan />} />
-            {/* Tools */}
+            <Route path="modul-p5" element={<ModulP5 />} />
+            <Route path="modul-kokurikuler" element={<ModulKokurikuler />} />
+            <Route path="deep-learning" element={<DeepLearningPlan />} />
+            <Route path="snp" element={<SNP />} />
+            <Route path="evaluasi-mutu" element={<EvaluasiMutu />} />
+            <Route path="strategic-advisor" element={<StrategicAdvisor />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="barcode" element={<BarcodeGenerator />} />
             <Route path="kelompok" element={<GroupGenerator />} />
-            {/* Admin */}
+            <Route path="invoice" element={<InvoiceGenerator />} />
+            <Route path="changelog" element={<ChangelogPage />} />
             <Route path="admin/users" element={<UsersPage />} />
             <Route path="admin/settings" element={<SettingsPage />} />
             <Route path="admin/maintenance" element={<MaintenancePage />} />

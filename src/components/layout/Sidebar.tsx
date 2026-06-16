@@ -7,7 +7,7 @@ import {
   Users, Settings, AlertTriangle, LogOut, School, FileText,
   Calendar, Clock, Target, Star, QrCode, Users2,
   BookMarked, BarChart3, ScrollText, ClipboardList, FileSpreadsheet,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Lightbulb, Globe, Briefcase, TrendingUp, Receipt, History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,9 @@ const navItems: NavItem[] = [
   { label: "KKTP",          path: "/dashboard/kktp",         icon: Target,           roles: ["owner", "admin", "guru"] },
   { label: "Rubrik",        path: "/dashboard/rubrik",       icon: Star,             roles: ["owner", "admin", "guru"] },
   { label: "Worksheet",     path: "/dashboard/worksheet",    icon: ScrollText,       roles: ["owner", "admin", "guru"] },
+  { label: "Modul P5",      path: "/dashboard/modul-p5",     icon: Lightbulb,        roles: ["owner", "admin", "guru"] },
+  { label: "Kokurikuler",   path: "/dashboard/modul-kokurikuler", icon: Globe,       roles: ["owner", "admin", "guru"] },
+  { label: "Deep Learning", path: "/dashboard/deep-learning", icon: TrendingUp,     roles: ["owner", "admin", "guru"] },
 ];
 
 const adminNav: NavItem[] = [
@@ -40,11 +43,17 @@ const adminNav: NavItem[] = [
   { label: "Jurnal Harian",  path: "/dashboard/jurnal-harian",      icon: BookMarked,    roles: ["owner", "admin", "guru"] },
   { label: "Supervisi",      path: "/dashboard/supervisi",          icon: Users2,        roles: ["owner", "admin", "guru"] },
   { label: "Laporan",        path: "/dashboard/laporan-kegiatan",    icon: FileText,      roles: ["owner", "admin", "guru"] },
+  { label: "SNP",            path: "/dashboard/snp",                  icon: Globe,         roles: ["owner", "admin"] },
+  { label: "Evaluasi Mutu",  path: "/dashboard/evaluasi-mutu",         icon: TrendingUp,    roles: ["owner", "admin"] },
+  { label: "Advisor",        path: "/dashboard/strategic-advisor",    icon: Briefcase,     roles: ["owner", "admin"] },
+  { label: "Reports",        path: "/dashboard/reports",              icon: BarChart3,     roles: ["owner", "admin"] },
 ];
 
 const toolsNav: NavItem[] = [
   { label: "Barcode",        path: "/dashboard/barcode",           icon: QrCode,         roles: ["owner", "admin", "guru", "staf"] },
   { label: "Kelompok",       path: "/dashboard/kelompok",          icon: Users2,         roles: ["owner", "admin", "guru"] },
+  { label: "Invoice",        path: "/dashboard/invoice",           icon: Receipt,        roles: ["owner", "admin"] },
+  { label: "Changelog",      path: "/dashboard/changelog",         icon: History,        roles: ["owner", "admin", "guru", "staf"] },
 ];
 
 const systemNav: NavItem[] = [
