@@ -13,6 +13,25 @@ export interface Subscription {
   created_at: string;
 }
 
+export interface UserProfile {
+  nip: string;
+  jenjang: string;
+  tahunPelajaran: string;
+  namaSekolah: string;
+  kepalaSekolah: string;
+  faseKelas: string;
+  email: string;
+  phone: string;
+  role: string;
+  displayName: string;
+  nama: string;
+  tier: string;
+  jenisNipKepalaSekolah: "NIP" | "NIK";
+  nipKepalaSekolah: string;
+  nipGuru: string;
+  jenisNipGuru: "NIP" | "NIK";
+}
+
 export interface User {
   id: string;
   email: string;
@@ -23,6 +42,7 @@ export interface User {
   subscription_id: string | null;
   active_period_end: string | null;
   status: UserStatus;
+  profile?: UserProfile;
   created_at: string;
   updated_at: string;
 }

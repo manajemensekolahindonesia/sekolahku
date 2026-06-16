@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import type { User } from "@/types";
+import type { User, UserProfile } from "@/types";
 
 interface AuthContextType {
   user: User | null;
+  profile: UserProfile | null;
   isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        profile: user?.profile || null,
         isAuthenticated: !!user,
         login,
         logout,

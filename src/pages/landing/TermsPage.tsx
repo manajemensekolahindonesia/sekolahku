@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div className="min-h-screen pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50 pt-8">
       <div className="max-w-2xl mx-auto">
         <Link to="/" className="text-sm text-primary hover:underline mb-4 inline-block">&larr; Kembali</Link>
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Syarat & Ketentuan</h1>

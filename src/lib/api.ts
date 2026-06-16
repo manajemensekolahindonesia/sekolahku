@@ -72,3 +72,8 @@ export async function generateModul(payload: GenerateModulRequest): Promise<Modu
 export function getImageUrl(prompt: string, model: string): string {
   return `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?model=${model}`;
 }
+
+// Token system placeholder
+export async function useToken() {
+  return { success: true, tokens: 0, isFree: false };
+}
