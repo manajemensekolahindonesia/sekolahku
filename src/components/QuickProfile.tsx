@@ -50,7 +50,7 @@ export default function QuickProfile() {
 
     setIsSaving(true);
     try {
-      await updateProfile(user.uid, formData);
+      await updateProfile(user.uid || user.id, formData);
       if (typeof refreshProfile === 'function') {
         await refreshProfile();
       }
@@ -72,7 +72,7 @@ export default function QuickProfile() {
       >
         <User size={18} className="text-red-500" />
         <h3 className="text-sm font-bold text-red-500 uppercase tracking-widest">Identitas Profil</h3>
-        {['owner', 'admin'].includes(profile?.role?.toLowerCase()) && <Shield size={14} className="text-red-200 ml-2" />}
+        {['owner', 'admin'].includes((profile?.role || '').toLowerCase()) && <Shield size={14} className="text-red-200 ml-2" />}
         <div className="ml-auto">
           {isExpanded ? <ChevronUp size={18} className="text-red-400" /> : <ChevronDown size={18} className="text-red-400" />}
         </div>

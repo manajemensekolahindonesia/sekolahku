@@ -7,6 +7,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +23,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    // Placeholder - in production this would fetch from API
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -30,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         logout,
+        refreshProfile,
       }}
     >
       {children}

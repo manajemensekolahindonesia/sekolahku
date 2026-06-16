@@ -11,10 +11,10 @@ import PrintSupportModal from '@/components/PrintSupportModal';
 import { getWatermarkHtml, universalPrint } from '@/lib/print';
 
 interface SNPProps {
-  subTab: string;
+  subTab?: string;
 }
 
-const SNP: React.FC<SNPProps> = ({ subTab }) => {
+const SNP: React.FC<SNPProps> = ({ subTab = 'ksp' }) => {
   const { profile } = useAuth();
   const [inputData, setInputData] = useState('');
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);

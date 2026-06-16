@@ -77,3 +77,11 @@ export function getImageUrl(prompt: string, model: string): string {
 export async function useToken() {
   return { success: true, tokens: 0, isFree: false };
 }
+
+export async function updateProfile(uid: string, data: Record<string, unknown>) {
+  return { success: true };
+}
+
+export const loginWithGoogle = () => {
+  window.location.href = '/api/auth/login';
+};

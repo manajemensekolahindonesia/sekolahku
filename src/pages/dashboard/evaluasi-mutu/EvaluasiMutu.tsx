@@ -63,7 +63,7 @@ function AdiwiyataWizard({ jenjang, jenisSekolah }: { jenjang?: string, jenisSek
 
     setThinking(true);
     try {
-      let conversationContents = [];
+      let conversationContents: { role: string; parts: { text: string }[] }[] = [];
       for (const h of history) {
          conversationContents.push({ role: 'user', parts: [{ text: h.userSummary }] });
          conversationContents.push({ role: 'model', parts: [{ text: h.aiResponse }] });
@@ -396,7 +396,7 @@ function SraWizard({ jenjang, jenisSekolah }: { jenjang?: string, jenisSekolah?:
 
     setThinking(true);
     try {
-      let conversationContents = [];
+      let conversationContents: { role: string; parts: { text: string }[] }[] = [];
       for (const h of history) {
          conversationContents.push({ role: 'user', parts: [{ text: h.userSummary }] });
          conversationContents.push({ role: 'model', parts: [{ text: h.aiResponse }] });
@@ -785,7 +785,7 @@ function SskWizard({ jenjang, jenisSekolah }: { jenjang?: string, jenisSekolah?:
 
     setThinking(true);
     try {
-      let conversationContents = [];
+      let conversationContents: { role: string; parts: { text: string }[] }[] = [];
       for (const h of history) {
         conversationContents.push({ role: 'user', parts: [{ text: h.userSummary }] });
         conversationContents.push({ role: 'model', parts: [{ text: h.aiResponse }] });

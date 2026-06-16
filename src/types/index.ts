@@ -30,10 +30,12 @@ export interface UserProfile {
   nipKepalaSekolah: string;
   nipGuru: string;
   jenisNipGuru: "NIP" | "NIK";
+  logoUrl?: string;
 }
 
 export interface User {
   id: string;
+  uid?: string;
   email: string;
   name: string;
   role: UserRole;

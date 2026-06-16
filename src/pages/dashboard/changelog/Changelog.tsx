@@ -149,7 +149,7 @@ export default function Changelog() {
                     // Parse markdown link syntax: [text](url)
                     const renderText = (text: string) => {
                       const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-                      const parts = [];
+                      const parts: (string | React.ReactNode)[] = [];
                       let lastIndex = 0;
                       let match;
                       
