@@ -49,8 +49,8 @@ function ModalOverlays() {
 
   return (
     <>
-      {/* Welcome Popup */}
-      {showWelcome && (
+      {/* Welcome Popup — hanya untuk user BELUM login DAN belum pernah lihat */}
+      {showWelcome && !isAuthenticated && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
             <button onClick={() => setShowWelcome(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
@@ -69,11 +69,9 @@ function ModalOverlays() {
                   <div key={f} className="bg-gray-50 rounded-lg p-2 text-gray-600 font-medium">{f}</div>
                 ))}
               </div>
-              {!isAuthenticated && (
-                <Button onClick={() => { setShowWelcome(false); window.location.href = "/login"; }} className="w-full">
-                  Mulai Sekarang
-                </Button>
-              )}
+              <Button onClick={() => { setShowWelcome(false); window.location.href = "/login"; }} className="w-full">
+                Mulai Sekarang
+              </Button>
               <Button variant="ghost" onClick={() => { setShowWelcome(false); try { localStorage.setItem("welcome_seen", "true"); } catch {} }} className="w-full mt-2">
                 Lanjutkan
               </Button>
