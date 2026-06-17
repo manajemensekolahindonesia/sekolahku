@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { Settings, BarChart3, CreditCard, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Settings, BarChart3, CreditCard, TrendingUp, Users, Shield, Coins, Edit2, Crown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, Legend,
@@ -50,6 +52,58 @@ export default function SettingsPage() {
     email: "info@sekolahku.id",
   });
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editForm, setEditForm] = useState({ tier: "Free", role: "guru", tokens: 0 });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("/api/admin/users");
+      const data = await res.json();
+      if (data.success && data.users) {
+        setUsers(data.users);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    }
+  };
+
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+    setEditForm({ tier: user.tier || "Free", role: user.role || "guru", tokens: user.tokens || 0 });
+  };
+
+  const handleSaveUser = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingUser.id,
+          ...editForm
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...editForm } : u));
+        setEditingUser(null);
+      } else {
+        alert(data.error || "Gagal menyimpan data");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat menyimpan.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -60,6 +114,7 @@ export default function SettingsPage() {
       <Tabs defaultValue="charts">
         <TabsList>
           <TabsTrigger value="charts">Analitik</TabsTrigger>
+          <TabsTrigger value="users">Pengguna</TabsTrigger>
           <TabsTrigger value="kop">KOP Sekolah</TabsTrigger>
           <TabsTrigger value="system">Sistem</TabsTrigger>
         </TabsList>
@@ -161,6 +216,128 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Users Tab */}
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-primary" />
+                Manajemen Pengguna
+              </CardTitle>
+              <CardDescription>Kelola role (badge), tier, dan isi token manual untuk tiap pengguna (Terhubung ke API).</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto rounded-lg border border-gray-100">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">Nama / Email</th>
+                      <th className="px-4 py-3 font-semibold">Badge/Role</th>
+                      <th className="px-4 py-3 font-semibold">Tier</th>
+                      <th className="px-4 py-3 font-semibold">Token</th>
+                      <th className="px-4 py-3 font-semibold text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {users.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
+                          Memuat data pengguna atau belum ada pengguna terdaftar...
+                        </td>
+                      </tr>
+                    )}
+                    {users.map(user => (
+                      <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-gray-900">{user.name}</p>
+                          <p className="text-gray-500 text-xs">{user.email}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${user.role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
+                            <Shield className="w-3.5 h-3.5" /> {user.role.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${user.tier === 'Premium' ? 'bg-emerald-100 text-emerald-700' : user.tier === 'Essential' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                            <Crown className="w-3.5 h-3.5" /> {user.tier}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-1.5 text-gray-700 font-bold">
+                            <Coins className="w-4 h-4 text-yellow-500" />
+                            {user.tokens}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button variant="ghost" size="sm" onClick={() => handleEditUser(user)} className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 font-semibold">
+                            <Edit2 className="w-4 h-4 mr-1.5" /> Edit
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Pengguna</DialogTitle>
+                <CardDescription>Ubah detail untuk {editingUser?.name}</CardDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Role (Badge)</label>
+                  <select 
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                    value={editForm.role}
+                    onChange={e => setEditForm({...editForm, role: e.target.value})}
+                  >
+                    <option value="guru">Guru</option>
+                    <option value="admin">Admin</option>
+                    <option value="siswa">Siswa</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Tier (Paket Berlangganan)</label>
+                  <select 
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                    value={editForm.tier}
+                    onChange={e => setEditForm({...editForm, tier: e.target.value})}
+                  >
+                    <option value="Free">Free</option>
+                    <option value="Essential">Essential</option>
+                    <option value="Premium">Premium</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Guru Pertama">Guru Pertama</option>
+                    <option value="Guru Muda">Guru Muda</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
+                    Isi Token Manual <Coins className="w-4 h-4 text-yellow-500" />
+                  </label>
+                  <Input 
+                    type="number" 
+                    value={editForm.tokens}
+                    className="font-mono text-base font-bold"
+                    onChange={e => setEditForm({...editForm, tokens: parseInt(e.target.value) || 0})}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">Jumlah sisa token yang dapat digunakan untuk menggunakan fitur AI premium.</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setEditingUser(null)} disabled={isLoading}>Batal</Button>
+                <Button onClick={handleSaveUser} className="bg-primary hover:bg-primary/90 text-white font-bold" disabled={isLoading}>
+                  {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         {/* KOP Tab */}

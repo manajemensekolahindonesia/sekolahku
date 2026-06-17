@@ -25,19 +25,27 @@ type Bindings = {
   GOOGLE_CLIENT_SECRET: string;
   ALLOWED_ORIGIN: string;
   OWNER_EMAIL: string;
+  DEV_MODE_PASSWORD?: string;
 };
 
 function formatUser(row: Record<string, unknown>) {
   return {
     id: row.id as string,
+    uid: row.id as string,
     email: row.email as string,
     name: row.name as string,
+    displayName: (row.display_name || row.name) as string,
     role: row.role as string,
     avatar_url: row.avatar_url as string | null,
     google_id: row.google_id as string | null,
     subscription_id: row.subscription_id as string | null,
     active_period_end: row.active_period_end as string | null,
     status: row.status as string,
+    tier: row.tier as string,
+    tokens: row.tokens as number,
+    isBanned: row.is_banned as number,
+    suspendedUntil: row.suspended_until as string | null,
+    activeUntil: row.active_period_end as string | null,
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
   };
@@ -100,9 +108,25 @@ async function updateUserStatus(db: D1Database, id: string, status: string) {
   return getUserById(db, id);
 }
 
+async function updateUserAdmin(db: D1Database, id: string, updates: { role?: string, tier?: string, tokens?: number }) {
+  const sets = [];
+  const params = [];
+  if (updates.role !== undefined) { sets.push("role = ?"); params.push(updates.role); }
+  if (updates.tier !== undefined) { sets.push("tier = ?"); params.push(updates.tier); }
+  if (updates.tokens !== undefined) { sets.push("tokens = ?"); params.push(updates.tokens); }
+  
+  if (sets.length === 0) return getUserById(db, id);
+  
+  sets.push("updated_at = datetime('now')");
+  params.push(id);
+  
+  await db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`).bind(...params).run();
+  return getUserById(db, id);
+}
+
 async function deleteUser(db: D1Database, id: string) {
   await db.prepare("DELETE FROM users WHERE id = ? AND role != 'owner'").bind(id).run();
 }
 
 export type { D1Database, D1PreparedStatement, D1Result, Bindings };
-export { getUsers, getUserById, getUserByEmail, createUser, updateUserStatus, deleteUser, formatUser };
+export { getUsers, getUserById, getUserByEmail, createUser, updateUserStatus, updateUserAdmin, deleteUser, formatUser };

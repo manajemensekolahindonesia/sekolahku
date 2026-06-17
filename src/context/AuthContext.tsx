@@ -22,7 +22,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const saved = localStorage.getItem("auth_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [tokens, setTokens] = useState(2);
   const [tier, setTier] = useState("Free");
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -33,10 +40,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback((user: User) => {
     setUser(user);
+    try {
+      localStorage.setItem("auth_user", JSON.stringify(user));
+    } catch {}
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
+    try {
+      localStorage.removeItem("auth_user");
+      // Optionally clear cookie if we had a backend endpoint for logout
+      document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    } catch {}
   }, []);
 
   const refreshProfile = useCallback(async () => {

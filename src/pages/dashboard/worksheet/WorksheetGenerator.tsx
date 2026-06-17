@@ -44,6 +44,7 @@ Rules:
 `;
 
 export default function WorksheetGenerator() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string>('openai');
@@ -168,7 +169,12 @@ export default function WorksheetGenerator() {
     }
 
     setIsGenerating(true);
-    setError('');
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+      return;
+    }
+setError('');
     
     try {
       const ai = new GoogleGenAI({});

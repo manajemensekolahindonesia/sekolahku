@@ -18,6 +18,7 @@ interface NavItem {
   path: string;
   icon: typeof LayoutDashboard;
   roles: UserRole[];
+  isPro?: boolean;
 }
 
 interface Category {
@@ -25,6 +26,7 @@ interface Category {
   title: string;
   items: NavItem[];
   roles: UserRole[];
+  isPro?: boolean;
 }
 
 export default function Sidebar() {
@@ -62,15 +64,16 @@ export default function Sidebar() {
       id: "generator",
       title: "AI Generator",
       roles: ["owner", "admin", "guru"],
+      isPro: true,
       items: [
-        { label: "Modul Ajar AI", path: "/dashboard/modul-ajar",   icon: Sparkles,         roles: ["owner", "admin", "guru"] },
-        { label: "Buat Soal",     path: "/dashboard/buat-soal",    icon: FileText,         roles: ["owner", "admin", "guru"] },
-        { label: "Perangkat Ajar", path: "/dashboard/perangkat-ajar", icon: BookMarked,    roles: ["owner", "admin", "guru"] },
-        { label: "KKTP",          path: "/dashboard/kktp",         icon: Target,           roles: ["owner", "admin", "guru"] },
-        { label: "Rubrik",        path: "/dashboard/rubrik",       icon: Star,             roles: ["owner", "admin", "guru"] },
-        { label: "Worksheet",     path: "/dashboard/worksheet",    icon: ScrollText,       roles: ["owner", "admin", "guru"] },
-        { label: "Modul P5",      path: "/dashboard/modul-p5",     icon: Lightbulb,        roles: ["owner", "admin", "guru"] },
-        { label: "Deep Learning", path: "/dashboard/deep-learning", icon: TrendingUp,     roles: ["owner", "admin", "guru"] },
+        { label: "Modul Ajar AI", path: "/dashboard/modul-ajar",   icon: Sparkles,         roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Buat Soal",     path: "/dashboard/buat-soal",    icon: FileText,         roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Perangkat Ajar", path: "/dashboard/perangkat-ajar", icon: BookMarked,    roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "KKTP",          path: "/dashboard/kktp",         icon: Target,           roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Rubrik",        path: "/dashboard/rubrik",       icon: Star,             roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Worksheet",     path: "/dashboard/worksheet",    icon: ScrollText,       roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Modul P5",      path: "/dashboard/modul-p5",     icon: Lightbulb,        roles: ["owner", "admin", "guru"], isPro: true },
+        { label: "Deep Learning", path: "/dashboard/deep-learning", icon: TrendingUp,     roles: ["owner", "admin", "guru"], isPro: true },
       ],
     },
     {
@@ -116,9 +119,7 @@ export default function Sidebar() {
       title: "Sistem",
       roles: ["owner", "admin"],
       items: [
-        { label: "Pengguna",       path: "/dashboard/admin/users",      icon: Users,          roles: ["owner", "admin"] },
-        { label: "Pengaturan",     path: "/dashboard/admin/settings",   icon: Settings,       roles: ["owner", "admin"] },
-        { label: "Maintenance",    path: "/dashboard/admin/maintenance", icon: AlertTriangle,  roles: ["owner"] },
+        { label: "Admin Panel",    path: "/dashboard/admin",            icon: Settings,       roles: ["owner", "admin"] },
       ],
     },
   ];
@@ -156,7 +157,12 @@ export default function Sidebar() {
                   onClick={() => toggleCategory(cat.id)}
                   className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase tracking-widest hover:text-gray-300 transition-colors"
                 >
-                  <span>{cat.title}</span>
+                  <span className="flex items-center gap-1">
+                    {cat.title}
+                    {cat.isPro && (
+                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">PREMIUM</span>
+                    )}
+                  </span>
                   <ChevronDown className={cn("w-3 h-3 transition-transform", isOpen && "rotate-180")} />
                 </button>
               ) : (
@@ -184,6 +190,11 @@ export default function Sidebar() {
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
                     {!collapsed && <span>{item.label}</span>}
+                    {!collapsed && item.isPro && (
+                      <span className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                        PREMIUM
+                      </span>
+                    )}
                   </NavLink>
                 ))}
               </div>

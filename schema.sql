@@ -25,11 +25,18 @@ CREATE TABLE users (
     id                TEXT PRIMARY KEY,
     email             TEXT    NOT NULL UNIQUE,
     name              TEXT    NOT NULL,
-    role              TEXT    NOT NULL CHECK (role IN ('owner','admin','guru','siswa','staf')),
+    display_name      TEXT,
+    role              TEXT    NOT NULL CHECK (role IN ('owner','admin','guru','siswa','staf','guest')),
+    tier              TEXT    DEFAULT 'Free',
+    tokens            INTEGER DEFAULT 2,
+    tokens_used       INTEGER DEFAULT 0,
     avatar_url        TEXT,
     google_id         TEXT,
     subscription_id   TEXT    REFERENCES subscriptions(id) ON DELETE SET NULL,
     active_period_end TEXT,
+    is_banned         INTEGER DEFAULT 0,
+    suspended_until   TEXT,
+    last_active       TEXT,
     status            TEXT    NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended','blocked')),
     created_at        TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at        TEXT    NOT NULL DEFAULT (datetime('now'))
@@ -39,6 +46,44 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email    ON users(email);
 CREATE INDEX idx_users_role     ON users(role);
 CREATE INDEX idx_users_status   ON users(status);
+
+-- ============================================================
+-- 2b. ADMIN & SYSTEM TABLES
+-- ============================================================
+CREATE TABLE settings (
+    id    TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+CREATE TABLE stats (
+    id        TEXT PRIMARY KEY,
+    favorites INTEGER DEFAULT 0
+);
+INSERT INTO stats (id, favorites) VALUES ('stats', 0);
+
+CREATE TABLE activity_logs (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    msg       TEXT NOT NULL,
+    status    TEXT NOT NULL,
+    color     TEXT NOT NULL,
+    time      TEXT NOT NULL,
+    timestamp INTEGER NOT NULL
+);
+
+CREATE TABLE admin_logs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    admin_email TEXT,
+    action      TEXT,
+    created_at  TEXT
+);
+
+CREATE TABLE token_usage_logs (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid          TEXT NOT NULL,
+    action       TEXT NOT NULL,
+    tokens_spent INTEGER NOT NULL,
+    timestamp    TEXT NOT NULL
+);
 
 -- ============================================================
 -- 3. KELAS (Classes / Rombel)

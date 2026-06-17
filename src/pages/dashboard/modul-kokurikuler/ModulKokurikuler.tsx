@@ -68,6 +68,7 @@ const TAKSONOMI_SOLO = [
 ];
 
 export default function ModulKokurikuler() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const isPremium = (profile?.tier || '').toLowerCase() === 'titan' || ['owner', 'admin'].includes((profile?.role || '').toLowerCase());
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -230,8 +231,15 @@ export default function ModulKokurikuler() {
     }
 
     setIsGenerating(true);
-    setError('');
+setError('');
     setResult(null);
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+setError('');
+    setResult(null);
+      return;
+    }
 
     try {
       const ai = new GoogleGenAI({});

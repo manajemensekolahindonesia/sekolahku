@@ -14,6 +14,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import LogoUploader from '@/components/LogoUploader';
 
 export default function DeepLearningPlan() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedModel, setSelectedModel] = useLocalStorage<string>('DeepLearningPlan_selectedModel', 'openai');
@@ -189,7 +190,12 @@ const TAKSONOMI_SOLO = [
 
   const generatePlan = async () => {
     setIsGenerating(true);
-    setError('');
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+      return;
+    }
+setError('');
     
     try {
       const ai = new GoogleGenAI({});

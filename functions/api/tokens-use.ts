@@ -8,11 +8,6 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
   if (request.method !== "POST") return errorResponse("Method not allowed", env, 405);
 
   try {
-    // For local dev, bypass token system
-    if (env.ALLOWED_ORIGIN?.includes("localhost")) {
-      return jsonResponse({ success: true, tokens: 999, isFree: false }, env);
-    }
-
     // Parse JWT from cookie to get uid
     const cookie = request.headers.get("Cookie") || "";
     const tokenMatch = cookie.match(/auth_token=([^;]+)/);
@@ -20,12 +15,12 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
       return jsonResponse({ success: true, tokens: 0, isFree: true }, env);
     }
 
-    const decoded = JSON.parse(atob(tokenMatch[1].split(".")[1])) as { uid: string };
-    const uid = decoded.uid;
+    const decoded = JSON.parse(atob(tokenMatch[1].split(".")[1])) as { id: string };
+    const id = decoded.id;
 
     const user = await env.DB.prepare(
-      "SELECT uid, email, role, tier, tokens, is_banned FROM users WHERE uid = ?"
-    ).bind(uid).first<Record<string, unknown>>();
+      "SELECT id, email, role, tier, tokens, is_banned FROM users WHERE id = ?"
+    ).bind(id).first<Record<string, unknown>>();
 
     if (!user) return errorResponse("User not found", env, 404);
     if (user.is_banned) return errorResponse("Account banned", env, 403);
@@ -53,12 +48,12 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
     const action = body.action || "AI Generation";
 
     await env.DB.prepare(
-      "UPDATE users SET tokens = tokens - 1, tokens_used = tokens_used + 1 WHERE uid = ?"
-    ).bind(uid).run();
+      "UPDATE users SET tokens = tokens - 1, tokens_used = tokens_used + 1 WHERE id = ?"
+    ).bind(id).run();
 
     await env.DB.prepare(
-      "INSERT INTO token_usage_logs (uid, action, tokens_spent) VALUES (?, ?, 1)"
-    ).bind(uid, action).run();
+      "INSERT INTO token_usage_logs (uid, action, tokens_spent, timestamp) VALUES (?, ?, 1, datetime('now'))"
+    ).bind(id, action).run();
 
     return jsonResponse({ success: true, tokens: tokens - 1, isFree: true }, env);
   } catch (err) {

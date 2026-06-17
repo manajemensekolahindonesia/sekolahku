@@ -36,13 +36,12 @@ import StrategicAdvisor from "@/pages/dashboard/strategic-advisor/StrategicAdvis
 import Reports from "@/pages/dashboard/reports/Reports";
 import InvoiceGenerator from "@/pages/dashboard/invoice/InvoiceGenerator";
 import ChangelogPage from "@/pages/dashboard/changelog/Changelog";
-import UsersPage from "@/pages/dashboard/admin/UsersPage";
-import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
-import MaintenancePage from "@/pages/dashboard/admin/MaintenancePage";
+import AdminPanel from "@/pages/dashboard/admin/AdminPanel";
 import Chatbot from "@/pages/dashboard/chatbot/Chatbot";
 import QuickProfile from "@/components/QuickProfile";
 import { X, Sparkles, LogIn, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "react-hot-toast";
 
 function ModalOverlays() {
   const { showLoginModal, showPremiumModal, showWelcome, setShowLoginModal, setShowPremiumModal, setShowWelcome, isAuthenticated } = useAuth();
@@ -69,7 +68,7 @@ function ModalOverlays() {
                   <div key={f} className="bg-gray-50 rounded-lg p-2 text-gray-600 font-medium">{f}</div>
                 ))}
               </div>
-              <Button onClick={() => { setShowWelcome(false); window.location.href = "/login"; }} className="w-full">
+              <Button onClick={() => { setShowWelcome(false); try { localStorage.setItem("welcome_seen", "true"); } catch {} window.location.href = "/login"; }} className="w-full">
                 Mulai Sekarang
               </Button>
               <Button variant="ghost" onClick={() => { setShowWelcome(false); try { localStorage.setItem("welcome_seen", "true"); } catch {} }} className="w-full mt-2">
@@ -180,12 +179,11 @@ export default function App() {
             <Route path="kelompok" element={<GroupGenerator />} />
             <Route path="invoice" element={<InvoiceGenerator />} />
             <Route path="changelog" element={<ChangelogPage />} />
-            <Route path="admin/users" element={<UsersPage />} />
-            <Route path="admin/settings" element={<SettingsPage />} />
-            <Route path="admin/maintenance" element={<MaintenancePage />} />
+            <Route path="admin" element={<AdminPanel />} />
           </Route>
         </Routes>
         <ModalOverlays />
+        <Toaster position="top-center" />
         <Chatbot isOpen={false} onClose={() => {}} />
       </BrowserRouter>
     </AuthProvider>

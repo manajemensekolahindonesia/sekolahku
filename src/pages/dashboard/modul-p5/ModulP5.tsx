@@ -11,6 +11,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import LogoUploader from '@/components/LogoUploader';
 
 export default function ModulP5() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [selectedModel, setSelectedModel] = useState<string>('openai');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -82,7 +83,12 @@ export default function ModulP5() {
     }
     
     setIsGenerating(true);
-    setError('');
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+      return;
+    }
+setError('');
     
     try {
       const ai = new GoogleGenAI({});

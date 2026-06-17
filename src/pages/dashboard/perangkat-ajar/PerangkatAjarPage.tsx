@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchTextModels, fetchImageModels, generateModul, getImageUrl, type ModulResponse } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import type { AIModel } from "@/types";
 
 export default function PerangkatAjarPage() {
@@ -11,6 +12,7 @@ export default function PerangkatAjarPage() {
   const [imageModels, setImageModels] = useState<AIModel[]>([]);
   const [modelsLoading, setModelsLoading] = useState(true);
   const [modelsError, setModelsError] = useState("");
+  const { consumeToken } = useAuth();
 
   const [topic, setTopic] = useState("");
   const [timeAllocation, setTimeAllocation] = useState("2 x 45 menit");
@@ -66,6 +68,12 @@ export default function PerangkatAjarPage() {
     setGenerating(true);
     setError("");
     setResult(null);
+
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setGenerating(false);
+      return;
+    }
 
     try {
       const data = await generateModul({

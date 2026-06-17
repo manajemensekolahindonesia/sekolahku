@@ -13,6 +13,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import LogoUploader from '@/components/LogoUploader';
 
 export default function BuatSoal() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState<'kisi-kisi' | 'naskah' | 'kunci' | 'kartu' | 'live-quiz'>('kisi-kisi');
   const [liveQuizIndex, setLiveQuizIndex] = useState(0);
@@ -179,7 +180,12 @@ export default function BuatSoal() {
 
   const generateContent = async (type: 'kisi-kisi' | 'soal') => {
     setIsGenerating(true);
-    setError('');
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+      return;
+    }
+setError('');
     
     try {
       const ai = new GoogleGenAI({});

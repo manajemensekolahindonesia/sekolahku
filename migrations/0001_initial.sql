@@ -8,7 +8,7 @@ PRAGMA foreign_keys = ON;
 -- ============================================================
 -- 1. SUBSCRIPTIONS (Paket Berlangganan)
 -- ============================================================
-CREATE TABLE subscriptions (
+CREATE TABLE IF NOT EXISTS subscriptions (
     id          TEXT PRIMARY KEY,
     plan_name   TEXT    NOT NULL,
     price       INTEGER NOT NULL DEFAULT 0,
@@ -21,7 +21,7 @@ CREATE TABLE subscriptions (
 -- ============================================================
 -- 2. USERS (Pengguna — Owner, Admin, Guru, Siswa, Staf)
 -- ============================================================
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id                TEXT PRIMARY KEY,
     email             TEXT    NOT NULL UNIQUE,
     name              TEXT    NOT NULL,
@@ -36,14 +36,14 @@ CREATE TABLE users (
 );
 
 -- Indexes
-CREATE INDEX idx_users_email    ON users(email);
-CREATE INDEX idx_users_role     ON users(role);
-CREATE INDEX idx_users_status   ON users(status);
+CREATE INDEX IF NOT EXISTS idx_users_email    ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role     ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_status   ON users(status);
 
 -- ============================================================
 -- 3. KELAS (Classes / Rombel)
 -- ============================================================
-CREATE TABLE kelas (
+CREATE TABLE IF NOT EXISTS kelas (
     id         TEXT PRIMARY KEY,
     nama       TEXT NOT NULL,
     tingkat    INTEGER NOT NULL,
@@ -52,12 +52,12 @@ CREATE TABLE kelas (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_kelas_wali ON kelas(wali_kelas);
+CREATE INDEX IF NOT EXISTS idx_kelas_wali ON kelas(wali_kelas);
 
 -- ============================================================
 -- 4. MATA PELAJARAN
 -- ============================================================
-CREATE TABLE mata_pelajaran (
+CREATE TABLE IF NOT EXISTS mata_pelajaran (
     id         TEXT PRIMARY KEY,
     nama       TEXT NOT NULL,
     kode       TEXT NOT NULL UNIQUE,
@@ -67,7 +67,7 @@ CREATE TABLE mata_pelajaran (
 -- ============================================================
 -- 5. PERANGKAT AJAR (AI Teaching Modules)
 -- ============================================================
-CREATE TABLE perangkat_ajar (
+CREATE TABLE IF NOT EXISTS perangkat_ajar (
     id               TEXT PRIMARY KEY,
     user_id          TEXT    NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     kelas_id         TEXT    REFERENCES kelas(id) ON DELETE SET NULL,
@@ -80,13 +80,13 @@ CREATE TABLE perangkat_ajar (
     created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_perangkat_ajar_user   ON perangkat_ajar(user_id);
-CREATE INDEX idx_perangkat_ajar_kelas  ON perangkat_ajar(kelas_id);
+CREATE INDEX IF NOT EXISTS idx_perangkat_ajar_user   ON perangkat_ajar(user_id);
+CREATE INDEX IF NOT EXISTS idx_perangkat_ajar_kelas  ON perangkat_ajar(kelas_id);
 
 -- ============================================================
 -- 6. JURNAL PEMBELAJARAN (Learning Journal)
 -- ============================================================
-CREATE TABLE jurnal_pembelajaran (
+CREATE TABLE IF NOT EXISTS jurnal_pembelajaran (
     id                TEXT PRIMARY KEY,
     user_id           TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     kelas_id          TEXT REFERENCES kelas(id) ON DELETE SET NULL,
@@ -101,13 +101,13 @@ CREATE TABLE jurnal_pembelajaran (
     updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_jurnal_user  ON jurnal_pembelajaran(user_id);
-CREATE INDEX idx_jurnal_date  ON jurnal_pembelajaran(date);
+CREATE INDEX IF NOT EXISTS idx_jurnal_user  ON jurnal_pembelajaran(user_id);
+CREATE INDEX IF NOT EXISTS idx_jurnal_date  ON jurnal_pembelajaran(date);
 
 -- ============================================================
 -- 7. ABSENSI (Attendance)
 -- ============================================================
-CREATE TABLE absensi (
+CREATE TABLE IF NOT EXISTS absensi (
     id         TEXT PRIMARY KEY,
     student_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     kelas_id   TEXT NOT NULL REFERENCES kelas(id) ON DELETE CASCADE,
@@ -118,14 +118,14 @@ CREATE TABLE absensi (
     UNIQUE(student_id, kelas_id, date)
 );
 
-CREATE INDEX idx_absensi_student ON absensi(student_id);
-CREATE INDEX idx_absensi_kelas   ON absensi(kelas_id);
-CREATE INDEX idx_absensi_date    ON absensi(date);
+CREATE INDEX IF NOT EXISTS idx_absensi_student ON absensi(student_id);
+CREATE INDEX IF NOT EXISTS idx_absensi_kelas   ON absensi(kelas_id);
+CREATE INDEX IF NOT EXISTS idx_absensi_date    ON absensi(date);
 
 -- ============================================================
 -- 8. PENILAIAN (Assessments / Grades)
 -- ============================================================
-CREATE TABLE penilaian (
+CREATE TABLE IF NOT EXISTS penilaian (
     id          TEXT PRIMARY KEY,
     student_id  TEXT    NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     kelas_id    TEXT REFERENCES kelas(id) ON DELETE SET NULL,
@@ -137,21 +137,21 @@ CREATE TABLE penilaian (
     created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_penilaian_student ON penilaian(student_id);
-CREATE INDEX idx_penilaian_type    ON penilaian(type);
+CREATE INDEX IF NOT EXISTS idx_penilaian_student ON penilaian(student_id);
+CREATE INDEX IF NOT EXISTS idx_penilaian_type    ON penilaian(type);
 
 -- ============================================================
 -- SEED DATA
 -- ============================================================
 
 -- Subscription plans
-INSERT INTO subscriptions (id, plan_name, price, features, max_users, max_students) VALUES
+INSERT OR IGNORE INTO subscriptions (id, plan_name, price, features, max_users, max_students) VALUES
     ('plan_free',    'Gratis',   0,      '["Perangkat Ajar AI (terbatas)","Jurnal Pembelajaran","Absensi (max 50 siswa)","Penilaian Dasar"]', 3, 50),
     ('plan_pro',     'Pro',      99000,  '["Akses AI Penuh","Semua Fitur","Absensi Unlimited","Cetak PDF/Excel","Rekap Nilai Otomatis"]', 50, 500),
     ('plan_sekolah', 'Sekolah',  299000, '["Semua Fitur Pro","Multi-Admin","KOP Sekolah Custom","Import CSV","Prioritas Support"]', 999, 9999);
 
 -- Default mata pelajaran
-INSERT INTO mata_pelajaran (id, nama, kode) VALUES
+INSERT OR IGNORE INTO mata_pelajaran (id, nama, kode) VALUES
     ('mapel_bind',  'Bahasa Indonesia',  'BIND'),
     ('mapel_bing',  'Bahasa Inggris',    'BING'),
     ('mapel_mtk',   'Matematika',        'MTK'),

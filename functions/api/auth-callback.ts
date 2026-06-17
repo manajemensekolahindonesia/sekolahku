@@ -1,4 +1,4 @@
-import { handleOptions, jsonResponse, errorResponse } from "../lib/helpers";
+import { handleOptions, jsonResponse, errorResponse, corsHeaders } from "../lib/helpers";
 import type { Bindings } from "../lib/db";
 
 export async function onRequest(context: { request: Request; env: Bindings }) {
@@ -8,12 +8,12 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
   if (request.method !== "POST") return errorResponse("Method not allowed", env, 405);
 
   try {
-    const body = await request.json() as { code?: string; state?: string };
-    const { code } = body;
+    const body = await request.json() as { code?: string; state?: string; redirectUri?: string };
+    const { code, redirectUri: clientRedirectUri } = body;
 
     if (!code) return errorResponse("Authorization code required", env, 400);
 
-    const redirectUri = `${env.ALLOWED_ORIGIN}/auth/callback`;
+    const redirectUri = clientRedirectUri || `${env.ALLOWED_ORIGIN}/auth/callback`;
 
     // Exchange code for tokens
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
@@ -29,7 +29,9 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
     });
 
     if (!tokenRes.ok) {
-      return errorResponse(`Google token exchange failed: ${tokenRes.status}`, env, 502);
+      const errText = await tokenRes.text();
+      console.error(`[GOOGLE OAUTH ERROR] Status: ${tokenRes.status}, Body:`, errText);
+      return errorResponse(`Google token exchange failed: ${tokenRes.status} - ${errText}`, env, 502);
     }
 
     const tokens = await tokenRes.json() as {
@@ -79,7 +81,17 @@ export async function onRequest(context: { request: Request; env: Bindings }) {
         .bind(id).first<Record<string, unknown>>() as Record<string, unknown>;
     }
 
-    return jsonResponse({ success: true, user }, env);
+    const payload = btoa(JSON.stringify({ id: user.id }));
+    const token = `header.${payload}.signature`;
+
+    return new Response(JSON.stringify({ success: true, user }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders(env),
+        "Set-Cookie": `auth_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`,
+      },
+    });
   } catch (err) {
     return errorResponse(`Auth error: ${err instanceof Error ? err.message : "Unknown"}`, env, 500);
   }

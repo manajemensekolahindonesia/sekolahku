@@ -34,7 +34,7 @@ export default function AuthCallbackPage() {
         const res = await fetch("/api/auth-callback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, redirectUri: window.location.origin + "/auth/callback" }),
         });
 
         // Backend not available (likely running frontend-only without Functions)
@@ -77,11 +77,10 @@ export default function AuthCallbackPage() {
         setState("error");
         const msg = err instanceof Error ? err.message : "Gagal terhubung ke server";
         if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-          setErrorMsg("Tidak dapat terhubung ke server backend. Pastikan Cloudflare Functions berjalan (wranger pages dev).");
-        } else if (msg.includes("token exchange failed") || msg.includes("invalid_grant")) {
-          setErrorMsg("Sesi login kadaluarsa atau kode sudah digunakan. Silakan login ulang.");
+          setErrorMsg("Tidak dapat terhubung ke server backend. Pastikan Cloudflare Functions berjalan.");
         } else {
-          setErrorMsg(msg);
+          // Show the raw message so we can debug exactly why Google token exchange failed
+          setErrorMsg(`Error: ${msg}`);
         }
       }
     })();

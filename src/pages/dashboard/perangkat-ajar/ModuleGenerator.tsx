@@ -34,6 +34,7 @@ const TAKSONOMI_SOLO = [
 ];
 
 export default function ModuleGenerator() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedModel, setSelectedModel] = useLocalStorage<string>('ModuleGenerator_selectedModel', 'openai');
@@ -146,8 +147,15 @@ export default function ModuleGenerator() {
 
   const generateModul = async () => {
     setIsGenerating(true);
-    setError('');
+setError('');
     setResult(null);
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+setError('');
+    setResult(null);
+      return;
+    }
     
     try {
       const ai = new GoogleGenAI({});

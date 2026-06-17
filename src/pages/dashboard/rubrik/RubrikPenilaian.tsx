@@ -12,6 +12,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import PDFRemixUpload from '@/components/PDFRemixUpload';
 
 export default function RubrikPenilaian() {
+  const { consumeToken } = useAuth();
   const { profile } = useAuth();
   const [selectedModel, setSelectedModel] = useState<string>('openai');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -94,7 +95,12 @@ export default function RubrikPenilaian() {
     }
     
     setIsGenerating(true);
-    setError('');
+    const canGenerate = await consumeToken();
+    if (!canGenerate) {
+      setIsGenerating(false);
+      return;
+    }
+setError('');
     
     try {
       const ai = new GoogleGenAI({});
